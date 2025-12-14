@@ -429,6 +429,7 @@ docker run -p 8080:8080 my-multi-stage-app
 ```
 - That's it! You have successfully created a Docker multi-stage build to optimize your Docker images.
 
+
 # <span style="color:#ff9f1a"> Dockers Logs and Monitoring </span>
 
 - Docker provides several commands and tools to help you monitor and view logs from your Docker containers.
