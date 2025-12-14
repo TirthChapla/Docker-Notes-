@@ -286,6 +286,8 @@ ENTRYPOINT ["java","-jar","app.jar"]
 
 ### Example Docker Compose File
 
+> Command to create a docker compose file : `touch docker-compose.yml` 
+
 ```yaml
 version: '3'
 services:
@@ -350,3 +352,109 @@ volumes:
      ```
      - This command will stop and remove the containers, networks, and volumes created by `docker compose up`.
   - That's it! You have successfully run a Docker Compose file to manage your multi-container application.
+
+
+# <span style="color:#37b8cc"> Docker Registry(Hub)</span>
+
+- We simply push images to docker hub or pull images from docker hub
+- A Docker registry is a centralized repository where Docker images are stored, managed, and distributed.
+- It allows users to share and distribute Docker images, making it easier to deploy applications across different environments.
+- Docker registries can be public or private.
+
+![img_4.png](img_4.png)
+
+# <span style="color:#ff6f61"> Docker Registry Commands </span>
+
+- Here are some useful Docker registry commands that can help you manage Docker images in a registry:
+- 1. **docker login**: Log in to a Docker registry (e.g., Docker Hub).
+   ```bash
+   docker login
+   ```
+- 2. **docker logout**: Log out from a Docker registry.
+   ```bash
+   docker logout
+   ```
+- 3. **docker pull**: Download a Docker image from a registry.
+  ```bash  
+    docker pull image_name:tag
+     ```    
+- 4. **docker push**: Upload a Docker image to a registry.
+   ```bash
+      docker push image_name:tag
+     ```
+- 5. **docker tag**: Tag a Docker image with a new name or version before pushing it to a registry.
+   ```bash
+     docker tag source_image:tag target_image:tag
+     ``` 
+- 6. **docker search**: Search for Docker images in a registry (e.g., Docker Hub).
+  ```bash  
+    docker search image_name
+  ```  
+    
+
+# <span style="color:#ff3f34">Docker Multi-Stage Build </span>
+
+- <span style="color:yellow" >It is useful to optimize the size of docker images. </span>
+- A Docker multi-stage build is a technique that allows you to use multiple `FROM` statements in a single Dockerfile to create smaller, more efficient Docker images.
+- By using multi-stage builds, you can separate the build environment from the runtime environment, resulting in smaller images that only contain the necessary components to run the application.
+- This approach helps reduce the size of the final image, improves security by minimizing the attack surface, and simplifies the build process.
+- Each stage can use a different base image, and you can copy artifacts from one stage to another using the `COPY --from` instruction.
+- This technique is particularly useful for applications that require a build process, such as compiling code or installing dependencies, before they can be run.
+- Here's an example of a Dockerfile that uses multi-stage builds:
+
+```dockerfile
+# Stage 1: Build stage
+FROM maven:3.8.4-openjdk-11 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests 
+# Stage 2: Runtime stage
+FROM openjdk:11-jre-slim
+WORKDIR /app
+COPY --from=build /app/target/my-app.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
+
+- In this example, the first stage uses a Maven image to build a Java application, while the second stage uses a lightweight OpenJDK image to run the application.
+- The final image only contains the necessary runtime components, resulting in a smaller and more efficient Docker image.
+
+- To build and run the multi-stage Dockerfile, you can use the same commands as before:
+
+```bash
+docker build -t my-multi-stage-app .
+docker run -p 8080:8080 my-multi-stage-app
+```
+- That's it! You have successfully created a Docker multi-stage build to optimize your Docker images.
+
+# <span style="color:#ff9f1a"> Dockers Logs and Monitoring </span>
+
+- Docker provides several commands and tools to help you monitor and view logs from your Docker containers.
+- Here are some useful commands and techniques for monitoring Docker containers and viewing their logs:
+- 1. **docker logs**: View the logs of a specific Docker container.
+   ```bash
+   docker logs container_id
+   ```
+- 2. **docker stats**: Display real-time resource usage statistics for running Docker containers.
+   ```bash
+   docker stats
+   ```
+- 3. **docker top**: Display the running processes inside a Docker container.
+   ```bash
+   docker top container_id
+   ```
+- 4. **docker inspect**: Display detailed information about a Docker container, including its configuration and state.
+   ```bash
+   docker inspect container_id
+   ```
+- 5. **docker events**: Monitor real-time events from the Docker daemon, such as container start, stop, and die events.
+   ```bash
+   docker events
+   ```
+- 6. **Logs in file**: You can also configure Docker to write container logs to a file on the host machine by using the `--log-driver` and `--log-opt` options when running a container.
+   ```bash
+    nohup docker attach container_id &
+    ```
+       cat nohup.out 
+  
